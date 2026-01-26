@@ -1,0 +1,6 @@
+[workspace]
+resolver = "3"
+members = ["ui"]
+
+[workspace.dependencies]
+leptos = { version = "0.8.15", features = ["csr"] }
