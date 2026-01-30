@@ -1,1 +1,28 @@
+# Rust & Cargo
 /target
+Cargo.lock
+ui/Cargo.lock
+**/*.rs.bk
+
+# Leptos / Trunk
+ui/dist
+.trunk/
+
+# Database & Secrets
+.env
+.env.*
+!.env.example
+*.sql
+!db/migrations/*.sql
+
+# Tauri (Cross-platform)
+**/src-tauri/target
+**/src-tauri/binaries
+**/src-tauri/gen
+
+# IDEs & OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
