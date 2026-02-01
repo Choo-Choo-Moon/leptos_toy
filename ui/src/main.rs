@@ -4,6 +4,7 @@ mod domain;
 mod infrastructure;
 mod presentation;
 
+use crate::presentation::layouts::main_layout::MainLayout;
 use crate::presentation::pages::gallery::GalleryPage;
 
 fn main() {
@@ -11,7 +12,9 @@ fn main() {
 
     leptos::mount::mount_to_body(|| {
         view! {
-            <GalleryPage />
+            <MainLayout>
+                <GalleryPage />
+            </MainLayout>
         }
     })
 }

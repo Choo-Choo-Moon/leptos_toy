@@ -17,20 +17,27 @@ For detailed service planning and business model, see: `docs/SERVICE_PLANNING.md
 # Install trunk (WASM bundler for Rust)
 cargo install trunk
 
+# Install Tauri CLI
+cargo install tauri-cli --version "^2.0.0"
+
 # Add necessary Rust components
 rustup component add rust-src
-
-# Add WASM target
 rustup target add wasm32-unknown-unknown
 ```
 
 ### Development
 ```bash
-# Run the development server
+# Run the development server (Web only)
 cd ui && trunk serve
 
-# Build for production
+# Run Desktop App (Tauri)
+cd app && cargo tauri dev
+
+# Build for production (Web)
 cd ui && trunk build --release
+
+# Build for production (Desktop)
+cd app && cargo tauri build
 
 # Check code
 cargo check --workspace
@@ -62,33 +69,35 @@ psql photo_gallery < db/migrations/20260130123000_create_photo_gallery_schema.sq
 ### Project Structure
 ```
 leptos_toy/
-├── ui/                    # Leptos 프론트엔드 애플리케이션
+├── ui/                    # Leptos 프론트엔드 애플리케이션 (Workspace Member)
 │   ├── src/
-│   │   └── main.rs       # 엔트리 포인트
+│   │   ├── domain/       # Clean Architecture: Entities
+│   │   ├── infrastructure/ # Repositories & API Clients
+│   │   ├── presentation/ # ViewModels, Pages, Components
+│   │   └── main.rs
 │   ├── style/
-│   │   └── input.css     # TailwindCSS 입력 파일
-│   ├── dist/             # 빌드 출력 디렉토리
-│   ├── index.html        # HTML 템플릿 (Trunk 태그 포함)
-│   ├── Trunk.toml        # Trunk 설정 (TailwindCSS 툴 정의)
-│   └── Cargo.toml
-├── db/                   # 데이터베이스 관련
-│   └── migrations/       # SQL 마이그레이션 파일
-│       └── *.sql        # PostgreSQL 스키마 정의
+│   ├── dist/             # Web 빌드 출력
+│   └── Trunk.toml
+├── app/                   # Tauri 데스크톱 애플리케이션 루트
+│   └── src-tauri/        # Tauri Rust Core (Workspace Member)
+│       ├── src/          # Tauri 엔트리 포인트
+│       ├── tauri.conf.json # Tauri 설정 (ui/dist 참조)
+│       └── Cargo.toml
+├── db/                   # 데이터베이스 마이그레이션
 ├── docs/                 # 프로젝트 문서
-│   └── SERVICE_PLANNING.md  # 서비스 기획서
-└── Cargo.toml           # 워크스페이스 설정
+└── Cargo.toml           # Cargo Workspace 설정
 ```
 
 ### Frontend Architecture (Leptos)
-- **Rendering Mode**: CSR (Client-Side Rendering) - 브라우저에서 WASM으로 실행
-- **Version**: Leptos 0.8.15 with CSR feature
-- **Mount Strategy**: `leptos::mount::mount_to_body`로 직접 마운트
-- **Build Tool**: Trunk (WASM 번들러 및 개발 서버)
-- **Styling**: TailwindCSS v4.1.13 (Trunk.toml에서 자동 빌드)
-  - Input file: `ui/style/input.css`
-  - Trunk이 자동으로 TailwindCSS 컴파일 처리
+- **Pattern**: MVVM (Model-View-ViewModel) with Clean Architecture
+- **State Management**: `create_resource` for async data, `Signal` for local state
+- **Styling**: TailwindCSS v4.1.13
+- **Optimization**: `IntersectionObserver` (Infinite Scroll), Lazy Loading, Async Decoding
 
-### Database Architecture (PostgreSQL)
+### Desktop Architecture (Tauri 2.0)
+- **Core**: Rust (app/src-tauri)
+- **Frontend**: Shared with `ui` project (dist folder)
+- **Communication**: Tauri Commands (Invokes) & Events
 - **Database**: PostgreSQL with PostGIS, pg_trgm extensions
 - **Schema Design**:
   - Hybrid approach: 정규화된 테이블 + JSONB for Exif metadata
@@ -166,6 +175,11 @@ leptos_toy/
 - Complete service planning document added at `docs/SERVICE_PLANNING.md`
 - Includes business model, roadmap, KPIs, and technical architecture
 - Target: 100K MAU within first year, 5% free-to-pro conversion
+
+### UI Layout Improvement (2026-02-01)
+- Implemented `MainLayout` with fixed title bar and independent content scrolling
+- Applied `h-dvh` for better mobile viewport handling
+- Refactored `GalleryPage` to use the new layout structure
 
 ## Important Notes
 
