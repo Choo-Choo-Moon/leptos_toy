@@ -186,6 +186,7 @@ leptos_toy/
 - Integrated Browser History API (`pushState`, `popstate`) to handle "Back" button for closing the modal
 - Updated `GalleryViewModel` to manage `selected_photo` state and history synchronization
 - Enhanced `PhotoCard` with click-to-preview and event propagation handling
+- Added navigation (Previous/Next) support in `PhotoPreviewModal` with arrow buttons and keyboard shortcuts
 
 ## Important Notes
 

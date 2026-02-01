@@ -105,4 +105,28 @@ impl GalleryViewModel {
             }
         }
     }
+
+    pub fn next_photo(&self) {
+        self.set_state.update(|s| {
+            if let Some(current) = &s.selected_photo {
+                if let Some(index) = s.photos.iter().position(|p| p.id == current.id) {
+                    if index + 1 < s.photos.len() {
+                        s.selected_photo = Some(s.photos[index + 1].clone());
+                    }
+                }
+            }
+        });
+    }
+
+    pub fn prev_photo(&self) {
+        self.set_state.update(|s| {
+            if let Some(current) = &s.selected_photo {
+                if let Some(index) = s.photos.iter().position(|p| p.id == current.id) {
+                    if index > 0 {
+                        s.selected_photo = Some(s.photos[index - 1].clone());
+                    }
+                }
+            }
+        });
+    }
 }
