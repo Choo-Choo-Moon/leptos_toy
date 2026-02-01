@@ -31,6 +31,7 @@ This file serves as the primary entry point and context guide for Gemini when wo
 
 #### Recent Context Updates
 *   **2026-02-01**: Updated `CLAUDE.md` to include Photo Preview Navigation feature (Next/Prev buttons & keyboard shortcuts).
+*   **2026-02-01**: Updated `CLAUDE.md` with Mobile Optimization, Pull-to-Refresh, Swipe Gestures, and Loading UX improvements.
 
 ## Quick Context Summary
 

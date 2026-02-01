@@ -25,6 +25,9 @@ features = [
     "Location",
     "PopStateEvent",
     "Event",
+    "Touch",
+    "TouchEvent",
+    "TouchList",
 ]
 
 [package.metadata.leptos]

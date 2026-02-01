@@ -188,6 +188,13 @@ leptos_toy/
 - Enhanced `PhotoCard` with click-to-preview and event propagation handling
 - Added navigation (Previous/Next) support in `PhotoPreviewModal` with arrow buttons and keyboard shortcuts
 
+### Mobile Optimization & UX Refinement (2026-02-01)
+- **Responsive Layout**: Optimized gallery grid (2 cols for mobile up to 6 cols for desktop)
+- **Mobile Preview**: Full-screen immersive modal with swipe gestures for navigation
+- **Pull to Refresh**: Implemented native-like pull-to-refresh for gallery list
+- **High-Res Preview**: Adaptive image loading (thumbnail vs high-res) based on context
+- **Loading UX**: Unified loading spinner experience for both data fetching and image loading
+
 ## Important Notes
 
 - The project is configured for Tauri integration but currently runs as a standalone web app

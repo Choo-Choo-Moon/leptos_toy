@@ -106,16 +106,43 @@ impl GalleryViewModel {
         }
     }
 
-    pub fn next_photo(&self) {
-        self.set_state.update(|s| {
-            if let Some(current) = &s.selected_photo {
-                if let Some(index) = s.photos.iter().position(|p| p.id == current.id) {
-                    if index + 1 < s.photos.len() {
+    pub async fn next_photo(&self) {
+        let state = self.state.get_untracked();
+        if let Some(current) = &state.selected_photo {
+            if let Some(index) = state.photos.iter().position(|p| p.id == current.id) {
+                // 다음 사진이 있는 경우
+                if index + 1 < state.photos.len() {
+                    self.set_state.update(|s| {
                         s.selected_photo = Some(s.photos[index + 1].clone());
-                    }
+                    });
+                } 
+                // 마지막 사진이고 더 불러올 데이터가 있는 경우
+                else if state.has_more {
+                    let set_state = self.set_state;
+                    set_state.update(|s| s.is_loading = true);
+                    
+                    let current_page = state.page;
+                    let limit = 20;
+                    
+                    // 데이터 로드
+                    let new_photos = fetch_mock_photos(current_page, limit).await;
+                    
+                    set_state.update(|s| {
+                        if new_photos.is_empty() {
+                            s.has_more = false;
+                        } else {
+                            s.photos.extend(new_photos.clone());
+                            s.page += 1;
+                            // 새로 로드된 데이터의 첫 번째 사진(전체 리스트의 다음 사진)으로 이동
+                            if let Some(first_new) = new_photos.first() {
+                                s.selected_photo = Some(first_new.clone());
+                            }
+                        }
+                        s.is_loading = false;
+                    });
                 }
             }
-        });
+        }
     }
 
     pub fn prev_photo(&self) {
@@ -127,6 +154,32 @@ impl GalleryViewModel {
                     }
                 }
             }
+        });
+    }
+
+    pub async fn refresh(&self) {
+        let set_state = self.set_state;
+        
+        // 상태 초기화 및 로딩 시작
+        set_state.update(|s| {
+            s.is_loading = true;
+            s.photos.clear();
+            s.page = 1;
+            s.has_more = true;
+        });
+
+        // 첫 페이지 로드
+        let limit = 20;
+        let new_photos = fetch_mock_photos(1, limit).await;
+
+        set_state.update(|s| {
+            if new_photos.is_empty() {
+                s.has_more = false;
+            } else {
+                s.photos = new_photos;
+                s.page = 2; // 다음 로드할 페이지
+            }
+            s.is_loading = false;
         });
     }
 }

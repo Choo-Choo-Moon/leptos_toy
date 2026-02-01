@@ -1,3 +1,4 @@
+use crate::presentation::components::common::pull_to_refresh::PullToRefresh;
 use crate::presentation::components::photo::photo_card::PhotoCard;
 use crate::presentation::components::photo::photo_preview_modal::PhotoPreviewModal;
 use crate::presentation::view_models::gallery_vm::GalleryViewModel;
@@ -79,50 +80,44 @@ pub fn GalleryPage() -> impl IntoView {
     });
 
     view! {
-        <div class="container mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">"My Gallery"</h1>
+        <PullToRefresh on_refresh=move || async move { vm.refresh().await }>
+            <div class="w-full md:container md:mx-auto px-2 md:px-4 py-4 md:py-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 px-1">"My Gallery"</h1>
 
-            {move || {
-                let state = vm.state.get();
+                {move || {
+                    let state = vm.state.get();
 
-                view! {
-                    <div>
-                        // Modal (Overlay)
-                        {if let Some(photo) = state.selected_photo {
-                            view! {
-                                <PhotoPreviewModal 
-                                    photo=photo 
-                                    on_close=Callback::new(move |_| vm.close_preview()) 
-                                />
-                            }.into_any()
-                        } else {
-                            view! {}.into_any()
-                        }}
+                    view! {
+                        <div>
+                                                    // Modal (Overlay)
+                                                    <PhotoPreviewModal 
+                                                        on_close=Callback::new(move |_| vm.close_preview()) 
+                                                    />
+                                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                                {state.photos.into_iter()
+                                    .map(|photo| view! { <PhotoCard photo=photo /> })
+                                    .collect_view()}
+                            </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {state.photos.into_iter()
-                                .map(|photo| view! { <PhotoCard photo=photo /> })
-                                .collect_view()}
+                            // Load More Trigger Sentinel
+                            <div
+                                node_ref=load_trigger
+                                class="h-20 flex justify-center items-center mt-8"
+                            >
+                                {if state.is_loading {
+                                    view! {
+                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                                    }.into_any()
+                                } else if !state.has_more {
+                                    view! { <span class="text-gray-500">"No more photos"</span> }.into_any()
+                                } else {
+                                    view! { <span class="text-transparent">"Loading trigger"</span> }.into_any()
+                                }}
+                            </div>
                         </div>
-
-                        // Load More Trigger Sentinel
-                        <div
-                            node_ref=load_trigger
-                            class="h-20 flex justify-center items-center mt-8"
-                        >
-                            {if state.is_loading {
-                                view! {
-                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                                }.into_any()
-                            } else if !state.has_more {
-                                view! { <span class="text-gray-500">"No more photos"</span> }.into_any()
-                            } else {
-                                view! { <span class="text-transparent">"Loading trigger"</span> }.into_any()
-                            }}
-                        </div>
-                    </div>
-                }
-            }}
-        </div>
+                    }
+                }}
+            </div>
+        </PullToRefresh>
     }
 }

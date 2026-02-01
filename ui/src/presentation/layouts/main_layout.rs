@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[component]
 pub fn MainLayout(children: Children) -> impl IntoView {
     view! {
-        <div class="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden">
+        <div class="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
             // Fixed Header (Title Bar)
             <header class="flex-none bg-white shadow-sm z-10 border-b border-gray-200">
                 <div class="w-full px-4 h-14 flex items-center justify-between">
