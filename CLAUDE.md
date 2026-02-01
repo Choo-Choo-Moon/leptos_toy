@@ -181,6 +181,12 @@ leptos_toy/
 - Applied `h-dvh` for better mobile viewport handling
 - Refactored `GalleryPage` to use the new layout structure
 
+### Photo Preview & History API (2026-02-01)
+- Implemented `PhotoPreviewModal` for full-screen photo details without page navigation
+- Integrated Browser History API (`pushState`, `popstate`) to handle "Back" button for closing the modal
+- Updated `GalleryViewModel` to manage `selected_photo` state and history synchronization
+- Enhanced `PhotoCard` with click-to-preview and event propagation handling
+
 ## Important Notes
 
 - The project is configured for Tauri integration but currently runs as a standalone web app

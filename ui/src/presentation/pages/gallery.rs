@@ -1,4 +1,5 @@
 use crate::presentation::components::photo::photo_card::PhotoCard;
+use crate::presentation::components::photo::photo_preview_modal::PhotoPreviewModal;
 use crate::presentation::view_models::gallery_vm::GalleryViewModel;
 use leptos::html;
 use leptos::prelude::*;
@@ -18,6 +19,24 @@ pub fn GalleryPage() -> impl IntoView {
     Effect::new(move |_| {
         // 초기 로드
         vm.load_more();
+    });
+
+    // PopState(뒤로가기) 이벤트 리스너
+    Effect::new(move |_| {
+        let handle_popstate = move |_| {
+            vm.sync_on_popstate();
+        };
+
+        let closure = Closure::wrap(Box::new(handle_popstate) as Box<dyn FnMut(web_sys::Event)>);
+        
+        if let Some(window) = web_sys::window() {
+            let _ = window.add_event_listener_with_callback("popstate", closure.as_ref().unchecked_ref());
+        }
+
+        // Cleanup function (Leptos Effects can return a cleanup closure, but here we keep it simple or let it leak for page lifetime)
+        // In a real app, use `leptos-use` or proper cleanup.
+        // For this page which is likely always mounted or main, it is acceptable.
+        closure.forget(); 
     });
 
     // Observer 연결 Effect
@@ -68,6 +87,18 @@ pub fn GalleryPage() -> impl IntoView {
 
                 view! {
                     <div>
+                        // Modal (Overlay)
+                        {if let Some(photo) = state.selected_photo {
+                            view! {
+                                <PhotoPreviewModal 
+                                    photo=photo 
+                                    on_close=Callback::new(move |_| vm.close_preview()) 
+                                />
+                            }.into_any()
+                        } else {
+                            view! {}.into_any()
+                        }}
+
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {state.photos.into_iter()
                                 .map(|photo| view! { <PhotoCard photo=photo /> })

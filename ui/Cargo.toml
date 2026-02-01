@@ -20,6 +20,11 @@ features = [
     "IntersectionObserverInit",
     "Element",
     "HtmlElement",
+    "Window",
+    "History",
+    "Location",
+    "PopStateEvent",
+    "Event",
 ]
 
 [package.metadata.leptos]
